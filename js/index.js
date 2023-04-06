@@ -16,34 +16,52 @@ let carX = canvas.width / 2 - carWidth / 2;
 let isCarGoLeft = false;
 let isCarGoRight = false;
 
-const obstacleHeight = 20;
-let obstacleWidth = 50;
-
-let obstacle1 = {
-  obstX: 0 + Math.floor(Math.random() * 400),
-  obstY: 0,
-  obstW: 100 + Math.floor(Math.random() * 200),
-};
-
-let obstacle2 = {
-  obstX: 0 + Math.floor(Math.random() * 400),
-  obstY: 0,
-  obstW: 100 + Math.floor(Math.random() * 200),
-};
-
-let obstacle3 = {
-  obstX: 0 + Math.floor(Math.random() * 400),
-  obstY: 0,
-  obstW: 100 + Math.floor(Math.random() * 200),
-};
-
-let obstacleY = 0;
-let obstacleSpeed = 2;
-
 let gameover = false;
 let animationId;
 
 let score = 0;
+
+let firstObst = {};
+let secondObst = {};
+let thirdObst = {};
+let obstacleSpeed = 2;
+
+class Obstacle {
+  constructor(obstX, obstY, obstWidth) {
+    this.obstX = obstX;
+    this.obstY = obstY;
+    this.obstWidth = obstWidth;
+  }
+
+  drawObstacle() {
+    ctx.beginPath();
+    ctx.fillStyle = "firebrick";
+    ctx.fillRect(this.obstX, this.obstY, this.obstWidth, 20);
+    ctx.closePath();
+  }
+
+  moveObstacle() {
+    this.obstY += obstacleSpeed;
+
+    if (
+      this.obstY > carY - carMargin &&
+      this.obstX <= carX + carWidth &&
+      this.obstX + this.obstWidth > carX
+    ) {
+      gameover = true;
+    }
+
+    if (this.obstY > canvas.height) {
+      score += 1;
+    }
+
+    if (this.obstY > canvas.height) {
+      this.obstX = 0 + Math.floor(Math.random() * 400);
+      this.obstY = 0;
+      this.obstWidth = 100 + Math.floor(Math.random() * 200);
+    }
+  }
+}
 
 window.onload = () => {
   canvas.style.display = "none";
@@ -76,6 +94,7 @@ window.onload = () => {
 
 function startGame() {
   ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+
   drawCar();
 
   if (isCarGoLeft && carX > 0) {
@@ -84,33 +103,44 @@ function startGame() {
     carX += 3;
   }
 
+  if (!firstObst.obstY) {
+    firstObst = new Obstacle(
+      0 + Math.floor(Math.random() * 400),
+      0,
+      100 + Math.floor(Math.random() * 200)
+    );
+  }
+
+  firstObst.drawObstacle();
+  firstObst.moveObstacle();
+
+  if (firstObst.obstY > 250 || secondObst.obstY > 0) {
+    if (!secondObst.obstY) {
+      secondObst = new Obstacle(
+        0 + Math.floor(Math.random() * 400),
+        0,
+        100 + Math.floor(Math.random() * 200)
+      );
+    }
+
+    secondObst.drawObstacle();
+    secondObst.moveObstacle();
+  }
+
+  if (secondObst.obstY > 250 || thirdObst.obstY > 0) {
+    if (!thirdObst.obstY) {
+      thirdObst = new Obstacle(
+        0 + Math.floor(Math.random() * 400),
+        0,
+        100 + Math.floor(Math.random() * 200)
+      );
+    }
+
+    thirdObst.drawObstacle();
+    thirdObst.moveObstacle();
+  }
+
   drawScore();
-
-  new Obstacle(
-    obstacle1.obstX,
-    obstacle1.obstY,
-    obstacle1.obstW
-  ).drawObstacle();
-
-  obstableMove(obstacle1);
-
-  if (obstacle1.obstY > 300 || obstacle2.obstY > 0) {
-    new Obstacle(
-      obstacle2.obstX,
-      obstacle2.obstY,
-      obstacle2.obstW
-    ).drawObstacle();
-    obstableMove(obstacle2);
-  }
-
-  if (obstacle2.obstY > 300 || obstacle3.obstY > 0) {
-    new Obstacle(
-      obstacle3.obstX,
-      obstacle3.obstY,
-      obstacle3.obstW
-    ).drawObstacle();
-    obstableMove(obstacle3);
-  }
 
   if (gameover) {
     cancelAnimationFrame(animationId);
@@ -119,62 +149,10 @@ function startGame() {
     animationId = requestAnimationFrame(startGame);
   }
 
-  restartobstacle();
-}
+  //Level up
 
-if (obstacle1.obstY === canvas.height) {
-  obstacle1 = {
-    obstX: 50 + Math.floor(Math.random() * 300),
-    obstY: 0,
-    obstW: 100 + Math.floor(Math.random() * 200),
-  };
-
-  new Obstacle(
-    obstacle1.obstX,
-    obstacle1.obstY,
-    obstacle1.obstW
-  ).drawObstacle();
-
-  obstableMove(obstacle1);
-}
-
-function restartobstacle() {
-  if (obstacle1.obstY === canvas.height) {
-    obstacle1 = {
-      obstX: 0 + Math.floor(Math.random() * 400),
-      obstY: 0,
-      obstW: 100 + Math.floor(Math.random() * 200),
-    };
-  } else if (obstacle2.obstY === canvas.height) {
-    obstacle2 = {
-      obstX: 0 + Math.floor(Math.random() * 400),
-      obstY: 0,
-      obstW: 100 + Math.floor(Math.random() * 200),
-    };
-  } else if (obstacle3.obstY === canvas.height) {
-    setTimeout(() => {
-      obstacle3 = {
-        obstX: 0 + Math.floor(Math.random() * 400),
-        obstY: 0,
-        obstW: 100 + Math.floor(Math.random() * 200),
-      };
-    }, 500);
-  }
-}
-
-function obstableMove(obstacleArr) {
-  obstacleArr.obstY += obstacleSpeed;
-
-  if (
-    obstacleArr.obstY === carY - carMargin &&
-    obstacleArr.obstX <= carX + carWidth &&
-    obstacleArr.obstX + obstacleArr.obstW > carX
-  ) {
-    gameover = true;
-  }
-
-  if (obstacleArr.obstY === canvas.height) {
-    score += 1;
+  if (score % 10 === 0 && score !== 0) {
+    obstacleSpeed = 4;
   }
 }
 
@@ -199,24 +177,4 @@ function drawScore() {
   ctx.fillStyle = "white";
   ctx.fillText(`Score : ${score}`, 150, canvas.height / 2 - 30);
   ctx.closePath();
-}
-
-class Obstacle {
-  constructor(obstX, obstY, obstWidth) {
-    this.obstX = obstX;
-    this.obstY = obstY;
-    this.obstWidth = obstWidth;
-  }
-
-  drawObstacle() {
-    ctx.beginPath();
-    ctx.fillStyle = "firebrick";
-    ctx.fillRect(this.obstX, this.obstY, this.obstWidth, obstacleHeight);
-    ctx.closePath();
-  }
-
-  setObstacle() {
-    this.obstY += 150;
-    console.log("hey");
-  }
 }
