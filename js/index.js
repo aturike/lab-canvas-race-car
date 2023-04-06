@@ -20,19 +20,19 @@ const obstacleHeight = 20;
 let obstacleWidth = 50;
 
 let obstacle1 = {
-  obstX: 50 + Math.floor(Math.random() * 300),
+  obstX: 0 + Math.floor(Math.random() * 400),
   obstY: 0,
   obstW: 100 + Math.floor(Math.random() * 200),
 };
 
 let obstacle2 = {
-  obstX: 50 + Math.floor(Math.random() * 300),
+  obstX: 0 + Math.floor(Math.random() * 400),
   obstY: 0,
   obstW: 100 + Math.floor(Math.random() * 200),
 };
 
 let obstacle3 = {
-  obstX: 50 + Math.floor(Math.random() * 300),
+  obstX: 0 + Math.floor(Math.random() * 400),
   obstY: 0,
   obstW: 100 + Math.floor(Math.random() * 200),
 };
@@ -94,13 +94,22 @@ function startGame() {
 
   obstableMove(obstacle1);
 
-  if (obstacle1.obstY > 300) {
+  if (obstacle1.obstY > 300 || obstacle2.obstY > 0) {
     new Obstacle(
       obstacle2.obstX,
       obstacle2.obstY,
       obstacle2.obstW
     ).drawObstacle();
     obstableMove(obstacle2);
+  }
+
+  if (obstacle2.obstY > 300 || obstacle3.obstY > 0) {
+    new Obstacle(
+      obstacle3.obstX,
+      obstacle3.obstY,
+      obstacle3.obstW
+    ).drawObstacle();
+    obstableMove(obstacle3);
   }
 
   if (gameover) {
@@ -132,16 +141,24 @@ if (obstacle1.obstY === canvas.height) {
 function restartobstacle() {
   if (obstacle1.obstY === canvas.height) {
     obstacle1 = {
-      obstX: 50 + Math.floor(Math.random() * 300),
+      obstX: 0 + Math.floor(Math.random() * 400),
       obstY: 0,
       obstW: 100 + Math.floor(Math.random() * 200),
     };
   } else if (obstacle2.obstY === canvas.height) {
     obstacle2 = {
-      obstX: 50 + Math.floor(Math.random() * 300),
+      obstX: 0 + Math.floor(Math.random() * 400),
       obstY: 0,
       obstW: 100 + Math.floor(Math.random() * 200),
     };
+  } else if (obstacle3.obstY === canvas.height) {
+    setTimeout(() => {
+      obstacle3 = {
+        obstX: 0 + Math.floor(Math.random() * 400),
+        obstY: 0,
+        obstW: 100 + Math.floor(Math.random() * 200),
+      };
+    }, 500);
   }
 }
 
